@@ -101,7 +101,7 @@ public class CarEventProcessor {
 			Thread.currentThread().interrupt();
 		}
 	}
-	
+	// method
 	public static void main(String[] args) throws IOException, AnalysisException {
 		if (args.length < 1) {
 	      System.exit(1);
