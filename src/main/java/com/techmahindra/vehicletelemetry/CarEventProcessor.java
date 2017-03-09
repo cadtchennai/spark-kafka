@@ -98,7 +98,7 @@ public class CarEventProcessor {
 			jssc.awaitTermination();
 		} catch (InterruptedException e) {
 			jssc.stop();
-			//Thread.currentThread().interrupt();
+			Thread.currentThread().interrupt();
 		}
 	}
 	
