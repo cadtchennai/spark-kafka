@@ -7,7 +7,9 @@ import org.apache.spark.api.java.function.ForeachFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import com.google.gson.Gson;
 import com.techmahindra.vehicletelemetry.utils.CarEventProducer;
+import com.techmahindra.vehicletelemetry.vo.MaintenanceAlert;
 
 public class MaintenanceAnalyzerService implements Serializable {
 	
@@ -38,10 +40,13 @@ public class MaintenanceAnalyzerService implements Serializable {
 	}
 	
 	private void generateAlert(String vin, String city, String model) throws IOException {
-		String msg="{\"vin\":\""+ vin +"\","
-				  + "\"city\":\"" + city + "\","
-				  + "\"model\":\"" + model + "\","
-				  + "\"maintenance\":\"Y\"}";
+		MaintenanceAlert alert = new MaintenanceAlert();
+		alert.setVin(vin);
+		alert.setCity(city);
+		alert.setModel(model);
+		alert.setAlertMsg("Maintenance is required");
+		Gson gson = new Gson();
+    	String msg = gson.toJson(alert);
 		CarEventProducer cep = new CarEventProducer();
 		cep.sendEvent(OUT_TOPIC, msg);
 	}

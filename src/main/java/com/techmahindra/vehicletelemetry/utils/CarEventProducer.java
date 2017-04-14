@@ -34,8 +34,8 @@ public class CarEventProducer {
 	
 	public static void main(String[] args) throws IOException {
 		// Generate events using file
-		CarEventProducer cdp = new CarEventProducer();
-		cdp.eventsFromFile(args[0], args[1]);
+		CarEventProducer cep = new CarEventProducer();
+		cep.eventsFromFile(args[0], args[1]);
 	}
 	
 	public void sendEvent(String topic, String msg) {
