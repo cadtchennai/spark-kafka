@@ -1,5 +1,6 @@
 package com.techmahindra.vehicletelemetry.service;
 
+import java.io.IOException;
 import java.io.Serializable;
 import org.apache.spark.api.java.function.ForeachFunction;
 import org.apache.spark.sql.Dataset;
@@ -14,7 +15,7 @@ public class UBIAnalyzerService implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String OUT_TOPIC = "ubidata";
 	
-	public void process(Dataset<Row> tempData) {
+	public void process(Dataset<Row> tempData) throws IOException {
 		if(tempData != null && tempData.count() > 0) {
 			tempData.foreach(new ForeachFunction<Row>() {
 				private static final long serialVersionUID = 1L;

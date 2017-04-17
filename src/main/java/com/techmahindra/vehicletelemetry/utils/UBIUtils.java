@@ -62,15 +62,11 @@ public class UBIUtils {
 	private static final String DEFAULT_SCORE_2 = "2";
 	private static final String DEFAULT_SCORE_1 = "1";
 
-	static 
+	public UBIUtils() throws IOException 
 	{
 		if(props!=null && props.size()==0)
 		{
-			try {
-				props.load(UBIUtils.class.getClassLoader().getResourceAsStream(UBI_PROP_FILE));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			props.load(UBIUtils.class.getClassLoader().getResourceAsStream(UBI_PROP_FILE));
 		}
 	}
 	//    OS%	16.00%
