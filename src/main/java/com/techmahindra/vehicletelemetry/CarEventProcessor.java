@@ -34,7 +34,6 @@ public class CarEventProcessor implements Serializable {
 
 	public void run(String topic) throws IOException, AnalysisException {
 		// Get properties
-		// Test
 		Properties props = new Properties();
 		props.load(CarEventProcessor.class.getClassLoader().getResourceAsStream("vt.properties"));
 		
