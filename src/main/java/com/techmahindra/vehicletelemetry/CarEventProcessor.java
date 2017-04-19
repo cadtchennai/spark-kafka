@@ -11,7 +11,6 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.sql.AnalysisException;
-import org.apache.spark.sql.Column;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -23,7 +22,6 @@ import org.apache.spark.streaming.kafka.KafkaUtils;
 
 import com.google.gson.Gson;
 import com.techmahindra.vehicletelemetry.service.MaintenanceAnalyzerService;
-import com.techmahindra.vehicletelemetry.service.UBIAnalyzerService;
 import com.techmahindra.vehicletelemetry.vo.CarEvent;
 
 import scala.Tuple2;
@@ -95,46 +93,6 @@ public class CarEventProcessor implements Serializable {
 					System.out.println("Applying maintenance analysis...");
 					MaintenanceAnalyzerService mas = new MaintenanceAnalyzerService();
 					mas.process(avgTempData);
-					
-					System.out.println("Applying trip analysis for UBI...");
-					sql = "SELECT history.vin as vin"
-							+ ",date_format(history.timestamp,'hh:mm:ss') as timestamp"
-							+ ",date_format(history.timestamp,'YYYY-MM-dd') as date"
-							+ ",(CASE WHEN hour(history.timestamp)>= 18 THEN 'night' ELSE 'day' END) AS tripTime"
-			                + ",(CASE WHEN (date_format(history.timestamp,'E')='Sat' OR date_format(history.timestamp,'E')='Sun') THEN 'weekend' ELSE 'weekday' END) AS tripDay"
-		                    +",history.tripId as tripId"
-		                    +",history.incidentType as incidentType"
-		                    +" FROM events_history as history,events_stream as stream"
-		                    +" WHERE history.vin=stream.vin"
-		                    +" GROUP BY history.timestamp,history.vin,history.incidentType,history.tripId"
-		                    + " ORDER BY history.timestamp";
-					Dataset<Row> incidentData = spark.sql(sql);
-//					incidentData.show(10);
-					incidentData.createOrReplaceTempView("incident_data");
-					
-					Dataset<Row> tripsData = incidentData.groupBy("date","vin","tripId").count().orderBy(new Column("date"));
-					tripsData.createOrReplaceTempView("trip_data");
-//					tripsData.show(10);
-					
-					sql = "select"
-							+ " incident.date as date"
-							+ ",incident.vin as vin"
-							+ ",trip.count as trips"
-							 + ",count(CASE WHEN incident.incidentType='OverSpeed' THEN incident.tripId ELSE NULL END) AS OSCount"
-			                 + ",count(CASE WHEN incident.incidentType='HardBraking' THEN incident.tripId ELSE NULL END) AS HBCount"
-			                 + ",count(CASE WHEN incident.incidentType='HardCornering' THEN incident.tripId ELSE NULL END) AS HCCount"
-			                 + ",count(CASE WHEN incident.incidentType='HardAcceleration' THEN incident.tripId ELSE NULL END) AS HACount"
-			                 + ",count(CASE WHEN incident.tripTime='night' THEN incident.tripId ELSE NULL END) AS NightTripCount"
-			                 + ",count(CASE WHEN incident.tripDay='weekend' THEN incident.tripId ELSE NULL END) AS WekendTripCount"
-							+ " FROM incident_data as incident, trip_data as trip"
-							+ " WHERE incident.date = trip.date"
-							+ " AND incident.vin = trip.vin"
-							+ " GROUP BY incident.date,incident.vin,trip.count"
-							+ " ORDER BY incident.date";
-					Dataset<Row> ubiData = spark.sql(sql);
-//					ubiData.show(10);
-					UBIAnalyzerService ubiService = new UBIAnalyzerService();
-					ubiService.process(ubiData);
 					
 					System.out.println("Processed " + eventRDD.count() + " events.");
 				}

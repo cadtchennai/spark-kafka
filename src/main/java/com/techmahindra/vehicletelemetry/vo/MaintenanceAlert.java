@@ -5,11 +5,12 @@ import java.io.Serializable;
 public class MaintenanceAlert implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private String vin;
-	private String city;
-	private String model;
+	private static final String DUMMY = "DUMMY";
+	private String vin = DUMMY;
+	private String city = DUMMY;
+	private String model = DUMMY;
 	private String alertDateTime;
-	private String alertMsg;
+	private String alertMsg = DUMMY;
 	public String getVin() {
 		return vin;
 	}
